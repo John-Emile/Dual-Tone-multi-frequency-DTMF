@@ -45,5 +45,4 @@ index_high=0;
 f_low = lowfreq(index_low);
 f_high = highfreq(index_high);
 x = cos(2*pi*f_low*t) + cos(2*pi*f_high*t);
-x = x+0;
 end
