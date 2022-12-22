@@ -62,10 +62,21 @@ f = (-0.5+1/length(x_t):1/length(x_t):0.5)*Fs;
 
 %Divide by Fs to normalize it & use abs to draw magnitude only
 Y_F = abs(fftshift(fft(x_t))/Fs); 
-
+y_db = 20.*log10(Y_F);
 %Plotting
 figure(4)
 plot(f,Y_F)
-title ('X(F)')
+title ('X(F) magnitude')
 xlabel('Frequency(Hz)')
 ylabel('Amplitude')
+axis([600 1700 0 0.3]);
+
+
+%Plotting
+figure(5)
+plot(f,y_db)
+title ('X(F) in dB')
+xlabel('Frequency(Hz)')
+ylabel('Amplitude(dB)')
+axis([600 1700 -100 -10]);
+
