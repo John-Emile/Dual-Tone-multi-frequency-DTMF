@@ -46,3 +46,8 @@ title ('AGWN + Signal')
 xlabel('Time(s)')
 ylabel('Amplitude')
 plot(t,y_t)
+
+%% Saving the audio of my number
+audiowrite('myNumber.wav',x_t,Fs);
+audiowrite('myNumberNoiseAdded.wav',y_t,Fs);
+
