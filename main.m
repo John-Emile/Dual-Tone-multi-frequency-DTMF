@@ -5,7 +5,7 @@ close all;
 %% Initialize variables
 x_tng = []; %no guard band 
 x_t = []; %guard band added 
-Fs = 8000; %Sampling frequency = 800Hz
+Fs = 8000; %Sampling frequency = 8000 samples/sec
 % T = 1/8000 sec/sample
 % 1/8000 ---> 1
 % Time needed ---> N
@@ -19,7 +19,8 @@ end
 
 %% Plotting signal amplitude with time
 %Range of time axis [0 to length(phone_num) with step length(x_t)]
-time = linspace(0,length(phoneNum),length(x_tng));
+stepLength = length(phoneNum)*(N/Fs);
+time = linspace(0,stepLength,length(x_tng));
 
 %Plotting
 figure(1)
@@ -32,7 +33,8 @@ ylabel('Amplitude')
 for i=1:length(phoneNum)
 x_t = [x_t Sym2TT(phoneNum(i)) silence]; %create gap between digits
 end
-t = linspace(0,length(phoneNum),length(x_t));
+stepLength = length(phoneNum)*((N+Ng)/Fs);
+t = linspace(0,stepLength,length(x_t));
 
 %Plotting
 figure(2)
@@ -48,7 +50,7 @@ y_t = x_t + noise;
 
 %plotting
 figure(3)
-plot(t,y_t)
+plot(t,x_t)
 title ('AGWN + Signal')
 xlabel('Time(s)')
 ylabel('Amplitude')
