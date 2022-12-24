@@ -10,7 +10,7 @@ figCounter =1;
 
 %% Get input from user
 
-%Get phone number from user
+% Get phone number from user
 phoneNum = input('Dial a Phone Number: ' , 's'); 
 
 while length(phoneNum) <= 4
@@ -30,8 +30,10 @@ N = str2num(timeNeeded)*Fs*1e-3;
 timeNeeded2 = input('Enter guard band time in ms: ' , 's');
 Ng = str2num(timeNeeded2)*Fs*1e-3;
 
-%Implement zeros for guard band
+
+% %Implement zeros for guard band
 silence = zeros(1,Ng);
+
 
 
 %% Plotting signal amplitude with time (Not Needed)
@@ -139,13 +141,24 @@ end
 %% Decoding x(t) to obtain the phone number
 f = [697 770 852 941 1209 1336 1477 1633]; %All possible frequencies
 freqIndices = round(f/Fs*(N+Ng)) + 1;
-    j=0;    %Counter to adjust all samples
+j=0;    %Counter to adjust all samples
+decodedNum = [];
 for i=1:length(phoneNum) 
     y_nt = y_t(((j*960)+i):(i*961));
     j = j+1;
-    dft_data = goertzel(y_nt,freqIndices);
+    
+    dft_data = goertzel(y_nt,freqIndices); 
     figure (figCounter)
     subplot (6,2,i)
     stem(f,abs(dft_data))
     title(sprintf('Number %i \n',i));
+
+    dft_data_abs = abs(dft_data);
+    [val, idx1] = max(abs(dft_data)); 
+    dft_data_abs(idx1) = 0;
+    [val, idx2] = max(abs(dft_data_abs)); 
+    dft_data_abs(idx2) = 0;
+    decodedNum = [decodedNum decode(f(idx1),f(idx2))];
 end
+disp('The entered number is : ');
+disp(decodedNum);

@@ -21,8 +21,8 @@ index_high=0;
 		for c=1:4 %4 rows
           
             %filling the array with 3rows*16col with low freq,high freq and
-            %index respectively
-			keypad_button_index = [ keypad_button_index [lowfreq(r);highfreq(c)] ]; 
+            %index respectively (Not needed here)
+			%keypad_button_index = [ keypad_button_index [lowfreq(r);highfreq(c)] ]; 
 			           
             %assign the keypad current value to variable comp to compare it
             %with the given element, use curley brackets to get the element
@@ -30,12 +30,12 @@ index_high=0;
             
             %cast the variable coming from keypad (from char to double) and
             %compare it with input coming from user
-            %if input == str2double(comp)
             if S == comp
-
                 %Get the index 
                 index_low = r;
                 index_high = c;
+                break
+                break
             else
                 % do nothing
             end
