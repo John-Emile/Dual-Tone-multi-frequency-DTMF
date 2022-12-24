@@ -6,28 +6,47 @@ close all;
 x_tng = []; %no guard band 
 x_t = []; %guard band added 
 Fs = 8000; %Sampling frequency = 8000 samples/sec
-% T = 1/8000 sec/sample
+figCounter =1;
+
+
+
+%% Get input from user
+
+%Get phone number from user
+phoneNum = input('Dial a Phone Number: ' , 's'); 
+
+% Ts = 1/8000 sec/sample
 % 1/8000 ---> 1
 % Time needed ---> N
-N = 800; %Time domain signal of 100ms
-Ng = 160; %Guard band of 20ms
+
+%Get time of number in time domain
+timeNeeded = input('Enter time domain signal in ms: ' , 's');
+N = str2num(timeNeeded)*Fs*1e-3;
+
+%Get time of guard band
+timeNeeded2 = input('Enter guard band time in ms: ' , 's');
+Ng = str2num(timeNeeded2)*Fs*1e-3;
+
+%Implement zeros for guard band
 silence = zeros(1,Ng);
-phoneNum = '12284299877';
-for i=1:length(phoneNum)
-    x_tng = [x_tng Sym2TT(phoneNum(i))];
-end
 
-%% Plotting signal amplitude with time
-%Range of time axis [0 to length(phone_num) with step length(x_t)]
-stepLength = length(phoneNum)*(N/Fs);
-time = linspace(0,stepLength,length(x_tng));
 
-%Plotting
-figure(1)
-plot (time,x_tng)
-title ('Input Signal')
-xlabel('Time(s)')
-ylabel('Amplitude')
+%% Plotting signal amplitude with time (Not Needed)
+% 
+% for i=1:length(phoneNum)
+%     x_tng = [x_tng Sym2TT(phoneNum(i))];
+% end
+% %Range of time axis [0 to length(phone_num) with step length(x_t)]
+% stepLength = length(phoneNum)*(N/Fs);
+% time = linspace(0,stepLength,length(x_tng));
+% 
+% %Plotting
+% figure(figCounter)
+% figCounter = figCounter+1;
+% plot (time,x_tng)
+% title ('Input Signal')
+% xlabel('Time(s)')
+% ylabel('Amplitude')
 
 %% Adding guard band of 20ms and plot it with time
 for i=1:length(phoneNum)
@@ -37,7 +56,8 @@ stepLength = length(phoneNum)*((N+Ng)/Fs);
 t = linspace(0,stepLength,length(x_t));
 
 %Plotting
-figure(2)
+figure(figCounter)
+figCounter = figCounter+1;
 plot(t,x_t)
 title ('Input Signal with guard band of 20ms')
 xlabel('Time(s)')
@@ -50,7 +70,8 @@ noise = 0.1*randn(var,length(x_t)); %0.1 to minimize noise power
 y_t = x_t + noise;
 
 %plotting
-figure(3)
+figure(figCounter)
+figCounter = figCounter+1;
 plot(t,y_t) 
 title ('AGWN + Signal')
 xlabel('Time(s)')
@@ -66,20 +87,62 @@ f = (-0.5+1/length(x_t):1/length(x_t):0.5)*Fs;
 %Divide by Fs to normalize it & use abs to draw magnitude only
 Y_F = abs(fftshift(fft(x_t))/Fs); 
 y_db = 20.*log10(Y_F);
-%Plotting
-figure(4)
+
+%Plotting spectrum magnitude
+figure(figCounter)
+figCounter = figCounter+1;
 plot(f,Y_F)
 title ('X(F) magnitude')
 xlabel('Frequency(Hz)')
 ylabel('Amplitude')
 axis([600 1700 0 0.3]);
 
-%Plotting
-figure(5)
+%Plotting spectrum magnitude in dB
+figure(figCounter)
+figCounter = figCounter+1;
 plot(f,y_db)
 title ('X(F) in dB')
 xlabel('Frequency(Hz)')
 ylabel('Amplitude(dB)')
 axis([600 1700 -100 -10]);
 
+%% Implementing the boxcar spectrogram
 
+windowSizes = {16 64 256 1024 4096};
+for i=1:length(windowSizes)
+    windowLen = windowSizes{i};
+    nFloor = floor(windowLen/2);
+    fftSize = 2^14;
+    figure (figCounter)
+    figCounter = figCounter + 1;
+    spectrogram(x_t,boxcar(windowLen),nFloor,fftSize,Fs);
+    title(sprintf('Spectrogram of %i boxcar \n',windowSizes{i}));
+end
+
+%% Implementing the blackman spectrogram
+
+windowSizes = {16 64 256 1024 4096};
+for i=1:length(windowSizes)
+    windowLen = windowSizes{i};
+    nFloor = floor(windowLen/2);
+    fftSize = 2^14;
+    figure (figCounter)
+    figCounter = figCounter+1;
+    spectrogram(x_t,blackman(windowLen),nFloor,fftSize,Fs);
+    title(sprintf('Spectrogram of %i blackman \n',windowSizes{i}));
+end
+
+    
+%% Decoding x(t) to obtain the phone number
+f = [697 770 852 941 1209 1336 1477 1633]; %All possible frequencies
+freqIndices = round(f/Fs*(N+Ng)) + 1;
+    j=0;    %Counter to adjust all samples
+for i=1:length(phoneNum) 
+    y_nt = y_t(((j*960)+i):(i*961));
+    j = j+1;
+    dft_data = goertzel(y_nt,freqIndices);
+    figure (figCounter)
+    subplot (6,2,i)
+    stem(f,abs(dft_data))
+    title(sprintf('Number %i \n',i));
+end
