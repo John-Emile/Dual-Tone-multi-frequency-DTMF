@@ -118,8 +118,8 @@ for i=1:length(windowSizes)
     fftSize = 2^14;
     figure (figCounter)
     figCounter = figCounter + 1;
-    spectrogram(x_t,boxcar(windowLen),nFloor,fftSize,Fs);
-    title(sprintf('Spectrogram of %i boxcar \n',windowSizes{i}));
+    spectrogram(x_t,rectwin(windowLen),nFloor,fftSize,Fs);
+    title(sprintf('Spectrogram of %i rectwin \n',windowSizes{i}));
 end
 
 %% Implementing the blackman spectrogram
