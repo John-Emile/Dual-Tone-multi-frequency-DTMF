@@ -8,12 +8,15 @@ x_t = []; %guard band added
 Fs = 8000; %Sampling frequency = 8000 samples/sec
 figCounter =1;
 
-
-
 %% Get input from user
 
 %Get phone number from user
 phoneNum = input('Dial a Phone Number: ' , 's'); 
+
+while length(phoneNum) <= 4
+disp('Invalid number, Enter at least 5 numbers');
+phoneNum = input('Dial a Phone Number: ' , 's');     
+end
 
 % Ts = 1/8000 sec/sample
 % 1/8000 ---> 1
